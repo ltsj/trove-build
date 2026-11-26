@@ -132,7 +132,7 @@ jobs:
   android:
     needs: prepare
     if: needs.prepare.outputs.ready == 'true'
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - name: Check out private main
@@ -154,19 +154,11 @@ jobs:
           flutter-version: ${{ needs.prepare.outputs.flutter }}
           channel: stable
           cache: true
-          pub-cache-path: ${{ github.workspace }}\.pub-cache
+          pub-cache-path: ${{ github.workspace }}/.pub-cache
 
-      # NDK 缓存已在 1.0.11 那次成功落盘（2.8GB）。命中时只下载一次，
-      # 省掉每次构建重新下载 NDK 的 2～3 分钟；未命中时首次归档很慢，
-      # 所以把它与 Flutter 版本绑定（`flutter.ndkVersion` 跟着 SDK 走）。
-      - name: Cache Android NDK
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
-        with:
-          path: C:\Android\android-sdk\ndk
-          key: android-ndk-${{ needs.prepare.outputs.flutter }}
-
-      # Gradle 缓存每次保存都要 2～3 分钟且从未真正落盘（缓存列表里没有条目），
-      # 先不缓存；Android 的构建时间主要花在 R8 与 NDK 上。
+      # NDK 29.0.14206865 已预装在 ubuntu-latest 镜像，直接用；
+      # build.gradle.kts 已把 ndkVersion 固定到该版本，不再需要 2.7GB 缓存。
+      # Gradle 缓存每次保存都要 2～3 分钟且从未真正落盘，故不缓存。
 
       - run: flutter pub get --enforce-lockfile
 
