@@ -160,8 +160,7 @@ jobs:
           cache: true
           pub-cache-path: ${{ github.workspace }}/.pub-cache
 
-      # NDK 29.0.14206865 已预装在 ubuntu-latest 镜像，直接用；
-      # build.gradle.kts 已把 ndkVersion 固定到该版本，不再需要 2.7GB 缓存。
+      # NDK 29 已预装 ubuntu 镜像；Gradle 缓存由 CI 的 setup-gradle 负责。
 
       - run: flutter pub get --enforce-lockfile
 
