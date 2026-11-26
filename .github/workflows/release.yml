@@ -149,6 +149,10 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      # 缓存 Gradle User Home（依赖 + 编译脚本 + build-cache-1），R8/JavaCompile 可 FROM-CACHE。
+      # 源码 gradle.properties 已开 org.gradle.caching=true。
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6
+
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           flutter-version: ${{ needs.prepare.outputs.flutter }}
@@ -158,7 +162,6 @@ jobs:
 
       # NDK 29.0.14206865 已预装在 ubuntu-latest 镜像，直接用；
       # build.gradle.kts 已把 ndkVersion 固定到该版本，不再需要 2.7GB 缓存。
-      # Gradle 缓存每次保存都要 2～3 分钟且从未真正落盘，故不缓存。
 
       - run: flutter pub get --enforce-lockfile
 
